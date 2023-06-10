@@ -6,12 +6,13 @@ from tensorflow.keras.models import load_model
 
 
 #
-# s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# s.bind(('', 5000))
-# s.listen(5)
-# print("Server is running now")
-# # #s.connect(("192.168.1.58", 5000))
-# clientsocket, address = s.accept()
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind(('', 5000))
+
+s.listen(5)
+print("Server is running now")
+#s.connect(("192.168.43.74", 5000))
+clientsocket, address = s.accept()
 # while True:
 #     print(s.recv(1024).decode("utf-8 "))
 
@@ -37,7 +38,7 @@ while flag:
     # Convert the frame to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     faces=human_face.detectMultiScale(gray,1.3,8)
-    if faces.all():
+    if (faces != tuple()):
         # Resize the frame to 224x224 (the input size of the model)
         resized = cv2.resize(frame, (224, 224))
         normalized = resized / 255.0
@@ -51,22 +52,22 @@ while flag:
         if predictions[0] > 0.84:
             class_label = "Mohamed"
             print(predictions[0])
-           # clientsocket.send("Mohamed".encode("utf-8"))
-            #s.close()
+            clientsocket.send("Mohamed".encode("utf-8"))
+            s.close()
             flag = False
         else:
             class_label = "Random"
             print(predictions[0])
-           # clientsocket.send("Random".encode("utf-8"))
+            #clientsocket.send("Random".encode("utf-8"))
 
             if counter != 3:
                 counter += 1
-                time.sleep(3.0)
-            else:
-                #clientsocket.send("Random".encode("utf-8"))
-                #s.close()
 
-                continue
+            else:
+                clientsocket.send("Random".encode("utf-8"))
+                s.close()
+                flag = False
+
     else:
         print("Please stand up in front of the camera")
 
@@ -88,3 +89,4 @@ cap.release()
 cv2.destroyAllWindows()
 
 
+# By mariomy
